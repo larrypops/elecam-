@@ -15,7 +15,7 @@ interface EnrichedResult extends ElectionResult {
   turnoutRate: number;
   validVotes: number;
   nullAndBlankPercentage: number;
-  [candidateName: string]: { votes: number; percentage: number } | number | string;
+  candidateScores: Record<string, { votes: number; percentage: number }>;
 }
 
 interface DetailedResultsTableProps {
@@ -81,22 +81,25 @@ export function DetailedResultsTable({ results, stations, candidates }: Detailed
         turnoutRate,
         validVotes,
         nullAndBlankPercentage,
-        ...candidateScores,
+        candidateScores,
       };
     });
   }, [results, stationMap, candidates]);
 
   const sortedResults = useMemo(() => {
     const isCandidateKey = candidateNames.has(sortConfig.key);
-    const key = sortConfig.key as keyof EnrichedResult;
 
     return [...enrichedResults].sort((a, b) => {
-      let aValue: number | string = isCandidateKey 
-        ? (a[key] as { votes: number }).votes ?? 0 
-        : a[key];
-      let bValue: number | string = isCandidateKey 
-        ? (b[key] as { votes: number }).votes ?? 0 
-        : b[key];
+      let aValue: number | string;
+      let bValue: number | string;
+
+      if (isCandidateKey) {
+        aValue = a.candidateScores[sortConfig.key]?.votes ?? 0;
+        bValue = b.candidateScores[sortConfig.key]?.votes ?? 0;
+      } else {
+        aValue = a[sortConfig.key as keyof EnrichedResult] as number | string;
+        bValue = b[sortConfig.key as keyof EnrichedResult] as number | string;
+      }
 
       // Handle string comparison for pollingStation
       if (typeof aValue === 'string' && typeof bValue === 'string') {
@@ -210,7 +213,7 @@ export function DetailedResultsTable({ results, stations, candidates }: Detailed
                 </div>
               </TableCell>
               {candidates.map(candidate => {
-                const score = (item[candidate.name] as { votes: number; percentage: number }) ?? { votes: 0, percentage: 0 };
+                const score = item.candidateScores[candidate.name] ?? { votes: 0, percentage: 0 };
                 return (
                   <TableCell key={candidate.id} className="text-right">
                     <div>{score.votes.toLocaleString()}</div>

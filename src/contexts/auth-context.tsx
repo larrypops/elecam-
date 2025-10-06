@@ -107,8 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.session) {
-        // Attendre que le listener onAuthStateChange mette à jour l'utilisateur
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Mettre à jour l'utilisateur immédiatement après la connexion
+        await fetchUserDetails(data.session.user.id);
         router.push('/dashboard');
       }
     } catch (error) {
