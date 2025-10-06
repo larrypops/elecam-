@@ -5,7 +5,7 @@ import type { ElectionResult, PollingStation, Candidate } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
-import { Badge } from '@/components/ui/badge'; // Assuming standard path; adjust if needed
+import { Badge } from '@/components/ui/badge';
 
 type SortableKeys = 'pollingStation' | 'turnoutRate' | 'turnout' | 'registeredVoters' | string;
 
